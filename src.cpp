@@ -6,6 +6,8 @@
 #include <cstdlib>
 #include <sstream>
 #include <stdexcept>
+#include <tuple>
+#include <algorithm>
 
 using namespace std;
 
@@ -15,7 +17,7 @@ struct TimeSlot {
         T071, T072, T081, T082, T091, T092, T101, T102, T111, T112, T121, T122, T131, T132,
         T141, T142, T151, T152, T161, T162, T171, T172, T181, T182, T191, T192, T201, T202
     };
-    Weekday day;
+    Weekday weekday;
     Time start_time, end_time;
 };
 
@@ -27,6 +29,11 @@ struct Offering {
     GroupCode group_code;
     vector<TimeSlot> time_slots;
 };
+
+typedef pair<const TimeSlot, const Offering> ProgrammeCell;
+typedef vector<ProgrammeCell> ProgrammeRow;
+typedef map<TimeSlot::Weekday, vector<ProgrammeRow>> Programme;
+typedef map<TimeSlot::Weekday, map<TimeSlot::Time, size_t>> ProgrammeLimits;
 
 map<string, TimeSlot::Weekday> get_weekday_dict() {
     static map<string, TimeSlot::Weekday> weekday_dict;
@@ -139,7 +146,7 @@ TimeSlot parse_time_slot(string weekday, string full_time) {
     if (times.size() != 2)
         throw invalid_argument("Invalid number of times per time slot");
     try {
-        time_slot.day = weekday_dict.at(weekday);
+        time_slot.weekday = weekday_dict.at(weekday);
         time_slot.start_time = time_dict.at(times[0]);
         time_slot.end_time = time_dict.at(times[1]);
     } catch(out_of_range) {
@@ -178,6 +185,40 @@ vector<Offering> get_offerings() {
     return offerings;
 }
 
+pair<Programme, ProgrammeLimits> get_new_programme() {
+    static const map<string, TimeSlot::Weekday> weekday_dict = get_weekday_dict();
+    static const map<string, TimeSlot::Time> time_dict = get_time_dict();
+    Programme programme;
+    ProgrammeLimits first_empty;
+    for (auto weekday : weekday_dict) {
+        programme[weekday.second] = vector<ProgrammeRow>();
+        first_empty[weekday.second] = map<TimeSlot::Time, size_t>();
+        for (auto time_atom : time_dict)
+            first_empty[weekday.second][time_atom.second] = 0;
+    }
+    return pair<Programme, ProgrammeLimits> (programme, first_empty);
+}
+
+Programme schedule(const vector<Offering> &offerings) {
+    pair<Programme, ProgrammeLimits> new_programme_package = get_new_programme();
+    Programme programme = new_programme_package.first;
+    ProgrammeLimits first_empty = new_programme_package.second;
+    for (Offering const& offering : offerings) {
+        for (TimeSlot const& time_slot : offering.time_slots) {
+            vector<size_t> first_empties;
+            for (int time_atom = static_cast<int>(time_slot.start_time); time_atom < static_cast<int>(time_slot.end_time); time_atom++)
+                first_empties.push_back(first_empty[time_slot.weekday][static_cast<TimeSlot::Time>(time_atom)]);
+            size_t max_first_empty = *max_element(first_empties.begin(), first_empties.end());
+            for (size_t i = programme[time_slot.weekday].size(); i <= max_first_empty + 1; i++)
+                programme[time_slot.weekday].push_back(ProgrammeRow());
+            programme[time_slot.weekday][max_first_empty].push_back(ProgrammeCell(time_slot, offering));
+            for (int time_atom = static_cast<int>(time_slot.start_time); time_atom < static_cast<int>(time_slot.end_time); time_atom++)
+                first_empty[time_slot.weekday][static_cast<TimeSlot::Time>(time_atom)] = max_first_empty + 1;
+        }
+    }
+    return programme;
+}
+
 int main(int argc, char const *argv[])
 {
     if (argc != 2) {
@@ -186,7 +227,13 @@ int main(int argc, char const *argv[])
     }
 
     static const map<CourseCode, string> course_names = get_course_names(argv[1]);
-    vector<Offering> offerings = get_offerings();
+    Programme programme = schedule(get_offerings());
+    
+    for (ProgrammeRow row : programme[TimeSlot::Weekday::SUN]) {
+        for (ProgrammeCell cell : row)
+            cout << cell.second.course_code << '\t';
+        cout << endl;
+    }
     
     return EXIT_SUCCESS;
 }
