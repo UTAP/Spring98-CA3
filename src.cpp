@@ -8,17 +8,59 @@
 #include <stdexcept>
 #include <tuple>
 #include <algorithm>
+#include <iomanip>
 
 using namespace std;
 
 struct TimeSlot {
-    enum class Weekday { SAT, SUN, MON, TUE,WED, THU, FRI };
+    enum class Weekday { SAT, SUN, MON, TUE, WED, THU, FRI };
     enum class Time {
         T071, T072, T081, T082, T091, T092, T101, T102, T111, T112, T121, T122, T131, T132,
         T141, T142, T151, T152, T161, T162, T171, T172, T181, T182, T191, T192, T201, T202
     };
     Weekday weekday;
     Time start_time, end_time;
+};
+
+const vector<TimeSlot::Weekday> weekdays = {
+    TimeSlot::Weekday::SAT,
+    TimeSlot::Weekday::SUN,
+    TimeSlot::Weekday::MON,
+    TimeSlot::Weekday::TUE,
+    TimeSlot::Weekday::WED,
+    TimeSlot::Weekday::THU,
+    TimeSlot::Weekday::FRI
+};
+
+const vector<TimeSlot::Time> time_atoms = {
+    TimeSlot::Time::T071, 
+    TimeSlot::Time::T072, 
+    TimeSlot::Time::T081, 
+    TimeSlot::Time::T082, 
+    TimeSlot::Time::T091, 
+    TimeSlot::Time::T092, 
+    TimeSlot::Time::T101, 
+    TimeSlot::Time::T102, 
+    TimeSlot::Time::T111, 
+    TimeSlot::Time::T112, 
+    TimeSlot::Time::T121, 
+    TimeSlot::Time::T122, 
+    TimeSlot::Time::T131, 
+    TimeSlot::Time::T132, 
+    TimeSlot::Time::T141, 
+    TimeSlot::Time::T142, 
+    TimeSlot::Time::T151, 
+    TimeSlot::Time::T152, 
+    TimeSlot::Time::T161, 
+    TimeSlot::Time::T162, 
+    TimeSlot::Time::T171, 
+    TimeSlot::Time::T172, 
+    TimeSlot::Time::T181, 
+    TimeSlot::Time::T182, 
+    TimeSlot::Time::T191, 
+    TimeSlot::Time::T192, 
+    TimeSlot::Time::T201, 
+    TimeSlot::Time::T202
 };
 
 typedef unsigned int CourseCode;
@@ -30,7 +72,7 @@ struct Offering {
     vector<TimeSlot> time_slots;
 };
 
-typedef pair<const TimeSlot, const Offering> ProgrammeCell;
+typedef pair<TimeSlot, Offering> ProgrammeCell;
 typedef vector<ProgrammeCell> ProgrammeRow;
 typedef map<TimeSlot::Weekday, vector<ProgrammeRow>> Programme;
 typedef map<TimeSlot::Weekday, map<TimeSlot::Time, size_t>> ProgrammeLimits;
@@ -47,6 +89,31 @@ map<string, TimeSlot::Weekday> get_weekday_dict() {
         weekday_dict["FRI"] = TimeSlot::Weekday::FRI;
     }
     return weekday_dict;
+}
+
+string to_string(TimeSlot::Weekday weekday) {
+    static map<TimeSlot::Weekday, string> weekday_name_dict;
+    if (!weekday_name_dict.size()) {
+        weekday_name_dict[TimeSlot::Weekday::SAT] = "Saturday";
+        weekday_name_dict[TimeSlot::Weekday::SUN] = "Sunday";
+        weekday_name_dict[TimeSlot::Weekday::MON] = "Monday";
+        weekday_name_dict[TimeSlot::Weekday::TUE] = "Tuesday";
+        weekday_name_dict[TimeSlot::Weekday::WED] = "Wednesday";
+        weekday_name_dict[TimeSlot::Weekday::THU] = "Thursday";
+        weekday_name_dict[TimeSlot::Weekday::FRI] = "Friday";
+    }
+    return weekday_name_dict[weekday];
+}
+
+size_t to_numerical(TimeSlot::Time time) {
+    return distance(time_atoms.begin(), find(time_atoms.begin(), time_atoms.end(), time));
+    // return static_cast<int>(time);
+}
+
+string to_string(TimeSlot::Time time) {
+    const int first_hour = 7;
+    string res = to_string(first_hour + to_numerical(time) / 2) + ":" + (to_numerical(time) % 2 ? "30" : "00");
+    return res.size() < 5 ? "0" + res : res;
 }
 
 map<string, TimeSlot::Time> get_time_dict() {
@@ -149,6 +216,8 @@ TimeSlot parse_time_slot(string weekday, string full_time) {
         time_slot.weekday = weekday_dict.at(weekday);
         time_slot.start_time = time_dict.at(times[0]);
         time_slot.end_time = time_dict.at(times[1]);
+        if (to_numerical(time_slot.start_time) >= to_numerical(time_slot.end_time))
+            throw invalid_argument("Invalid time slot arg");
     } catch(out_of_range) {
         throw invalid_argument("Invalid time slot arg");
     }
@@ -172,13 +241,13 @@ Offering parse_offering(string str) {
     return offering;
 }
 
-vector<Offering> get_offerings() {
+vector<Offering> get_offerings(istream &istr) {
     vector<Offering> offerings;
     string offering;
-    while (getline(cin, offering)) {
+    while (getline(istr, offering)) {
         try {
             offerings.push_back(parse_offering(offering));
-        } catch(const invalid_argument& exc) {
+        } catch(const invalid_argument &exc) {
             cerr << exc.what() << ". Try again..." << endl;
         }
     }
@@ -186,54 +255,128 @@ vector<Offering> get_offerings() {
 }
 
 pair<Programme, ProgrammeLimits> get_new_programme() {
-    static const map<string, TimeSlot::Weekday> weekday_dict = get_weekday_dict();
-    static const map<string, TimeSlot::Time> time_dict = get_time_dict();
     Programme programme;
     ProgrammeLimits first_empty;
-    for (auto weekday : weekday_dict) {
-        programme[weekday.second] = vector<ProgrammeRow>();
-        first_empty[weekday.second] = map<TimeSlot::Time, size_t>();
-        for (auto time_atom : time_dict)
-            first_empty[weekday.second][time_atom.second] = 0;
+    for (auto weekday : weekdays) {
+        programme[weekday] = vector<ProgrammeRow>();
+        first_empty[weekday] = map<TimeSlot::Time, size_t>();
+        for (auto time_atom : time_atoms)
+            first_empty[weekday][time_atom] = 0;
     }
     return pair<Programme, ProgrammeLimits> (programme, first_empty);
+}
+
+void sort(Programme &programme) {
+    for (auto weekday : weekdays) {
+        for (ProgrammeRow &row : programme.at(weekday))
+            // ;
+            sort(row.begin(), row.end(), [](const ProgrammeCell &first_cell, const ProgrammeCell &second_cell) -> bool {
+                return to_numerical(first_cell.first.start_time) < to_numerical(second_cell.first.start_time);
+            });
+    }
 }
 
 Programme schedule(const vector<Offering> &offerings) {
     pair<Programme, ProgrammeLimits> new_programme_package = get_new_programme();
     Programme programme = new_programme_package.first;
     ProgrammeLimits first_empty = new_programme_package.second;
-    for (Offering const& offering : offerings) {
-        for (TimeSlot const& time_slot : offering.time_slots) {
+    for (Offering const &offering : offerings) {
+        for (TimeSlot const &time_slot : offering.time_slots) {
             vector<size_t> first_empties;
-            for (int time_atom = static_cast<int>(time_slot.start_time); time_atom < static_cast<int>(time_slot.end_time); time_atom++)
-                first_empties.push_back(first_empty[time_slot.weekday][static_cast<TimeSlot::Time>(time_atom)]);
+            auto start_time_iter = find(time_atoms.begin(), time_atoms.end(), time_slot.start_time);
+            auto end_time_iter = find(time_atoms.begin(), time_atoms.end(), time_slot.end_time);
+            for (
+                auto time_atom = start_time_iter;
+                time_atoms.size() && time_atom != time_atoms.end() && time_atom != end_time_iter;
+                time_atom++
+            )
+                first_empties.push_back(first_empty[time_slot.weekday][*time_atom]);
             size_t max_first_empty = *max_element(first_empties.begin(), first_empties.end());
             for (size_t i = programme[time_slot.weekday].size(); i <= max_first_empty + 1; i++)
                 programme[time_slot.weekday].push_back(ProgrammeRow());
             programme[time_slot.weekday][max_first_empty].push_back(ProgrammeCell(time_slot, offering));
-            for (int time_atom = static_cast<int>(time_slot.start_time); time_atom < static_cast<int>(time_slot.end_time); time_atom++)
-                first_empty[time_slot.weekday][static_cast<TimeSlot::Time>(time_atom)] = max_first_empty + 1;
+            for (
+                auto time_atom = start_time_iter;
+                time_atoms.size() && time_atom != time_atoms.end() && time_atom != end_time_iter;
+                time_atom++
+            )
+                first_empty[time_slot.weekday][*time_atom] = max_first_empty + 1;
         }
     }
+    sort(programme);
     return programme;
+}
+
+void print_row_borders(const ProgrammeRow &row, ostream &ostr,
+        size_t cell_width, const char vertical_border, const char left_corner, const char right_corner) {
+    ostr << "  ";
+    size_t cur = 0;
+    for (ProgrammeCell cell : row) {
+        ostr << setw((to_numerical(cell.first.start_time) - cur) * cell_width + 1) << right << left_corner;
+        size_t width = (to_numerical(cell.first.end_time) - to_numerical(cell.first.start_time));
+        ostr << setfill(vertical_border) << setw(width * cell_width - 1) << right << right_corner << setfill(' ');
+        cur = to_numerical(cell.first.end_time);
+    }
+    ostr << endl;
+}
+
+void print_row_contents(const ProgrammeRow &row, const map<CourseCode, string> &course_names, ostream &ostr,
+        size_t cell_width, const char vertical_border) {
+    ostr << "  ";
+    size_t cur = 0;
+    for (ProgrammeCell cell : row) {
+        ostr << setw((to_numerical(cell.first.start_time) - cur) * cell_width + 1) << right << vertical_border;
+        size_t width = (to_numerical(cell.first.end_time) - to_numerical(cell.first.start_time));
+        size_t cnt_width = width * cell_width - 2;
+        string cnt = course_names.at(cell.second.course_code) + " (" + to_string(cell.second.group_code) + ")";
+        if (cnt.size() > cnt_width)
+            throw invalid_argument("Long course name");
+        size_t space_after_cnt_width = (cnt_width - cnt.size()) / 2;
+        ostr << setw(cnt_width - space_after_cnt_width) << right << cnt
+             << setw(space_after_cnt_width + 1) << right << vertical_border;
+        cur = to_numerical(cell.first.end_time);
+    }
+    ostr << endl;
+}
+
+void print_row(const ProgrammeRow &row, const map<CourseCode, string> &course_names, ostream &ostr, size_t cell_width) {
+    const char vertical_border = '|';
+    const char horizontal_border = '-';
+    const char top_left_corner = '+';
+    const char top_right_corner = '+';
+    const char bottom_left_corner = '+';
+    const char bottom_right_corner = '+';
+    print_row_borders(row, ostr, cell_width, horizontal_border, top_left_corner, top_right_corner);
+    print_row_contents(row, course_names, ostr, cell_width, vertical_border);
+    print_row_borders(row, ostr, cell_width, horizontal_border, bottom_left_corner, bottom_right_corner);
+}
+
+void print_programme(const Programme &programme, const map<CourseCode, string> &course_names, string title, ostream &ostr) {
+    const size_t cell_width = 10;
+    ostr << "# " << title << endl << endl;
+    for (auto weekday : weekdays) {
+        ostr << "## " << to_string(weekday) << endl << endl;
+        for (auto time_atom : time_atoms)
+            ostr << setw(cell_width) << left << to_string(time_atom);
+        ostr << endl;
+        ostr << setfill('_') << setw(cell_width * (time_atoms.size() - 1) + string("     ").size())
+             << left << '_' << setfill(' ') << endl;
+        for (ProgrammeRow row : programme.at(weekday))
+            if (row.size())
+                print_row(row, course_names, ostr, cell_width);
+        ostr << endl;
+    }
 }
 
 int main(int argc, char const *argv[])
 {
-    if (argc != 2) {
-        cerr << "Usage: " << argv[0] << " <CourseNameDict.csv>" << endl;
+    if (argc != 3) {
+        cerr << "Usage: " << argv[0] << " <CourseNameDict.csv> <Title>" << endl;
         return EXIT_FAILURE;
     }
 
     static const map<CourseCode, string> course_names = get_course_names(argv[1]);
-    Programme programme = schedule(get_offerings());
-    
-    for (ProgrammeRow row : programme[TimeSlot::Weekday::SUN]) {
-        for (ProgrammeCell cell : row)
-            cout << cell.second.course_code << '\t';
-        cout << endl;
-    }
+    print_programme(schedule(get_offerings(cin)), course_names, argv[2], cout);
     
     return EXIT_SUCCESS;
 }
