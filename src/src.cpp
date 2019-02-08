@@ -370,8 +370,13 @@ void print_programme(const Programme &programme, const map<CourseCode, string> &
     ostr << title_pref << title << endl << endl;
     for (auto weekday : weekdays) {
         ostr << weekday_pref << to_string(weekday) << endl << endl;
-        for (auto time_atom : time_atoms)
-            ostr << setw(cell_width) << left << to_string(time_atom);
+        bool is_first_time = true;
+        for (auto time_atom : time_atoms) {
+            if (!is_first_time)
+                ostr << setw(cell_width) << right;
+            ostr << to_string(time_atom);
+            is_first_time = false;
+        }
         ostr << endl;
         ostr << setfill(timeline_border) << setw(cell_width * (time_atoms.size() - 1) + string(time_mask).size())
              << left << timeline_border << setfill(' ') << endl;
