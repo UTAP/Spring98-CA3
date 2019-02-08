@@ -307,7 +307,7 @@ Programme schedule(const vector<Offering> &offerings) {
 }
 
 void print_row_pref(ostream &ostr) {
-    const string time_hour_mask = "00";
+    const string time_hour_mask = "hh";
     ostr << string(time_hour_mask.size(), ' ');
 }
 
@@ -365,7 +365,7 @@ void print_programme(const Programme &programme, const map<CourseCode, string> &
     const string title_pref = "# ";
     const string weekday_pref = "## ";
     const char timeline_border = '_';
-    const string time_mask = "00:00";
+    const string time_mask = "hh:mm";
 
     ostr << title_pref << title << endl << endl;
     for (auto weekday : weekdays) {
