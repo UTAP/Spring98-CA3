@@ -1,6 +1,6 @@
 all: a.out
 
-a.out:
+a.out: src.cpp
 	g++ -fsanitize=address -Wextra -Wall -pedantic -std=c++11 src.cpp
 
 .PHONY: demo

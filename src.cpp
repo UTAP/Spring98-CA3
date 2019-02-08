@@ -1,14 +1,14 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <map>
-#include <vector>
+#include <algorithm>
 #include <cstdlib>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <map>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 #include <tuple>
-#include <algorithm>
-#include <iomanip>
+#include <vector>
 
 using namespace std;
 
@@ -107,7 +107,6 @@ string to_string(TimeSlot::Weekday weekday) {
 
 size_t to_numerical(TimeSlot::Time time) {
     return distance(time_atoms.begin(), find(time_atoms.begin(), time_atoms.end(), time));
-    // return static_cast<int>(time);
 }
 
 string to_string(TimeSlot::Time time) {
@@ -269,7 +268,6 @@ pair<Programme, ProgrammeLimits> get_new_programme() {
 void sort(Programme &programme) {
     for (auto weekday : weekdays) {
         for (ProgrammeRow &row : programme.at(weekday))
-            // ;
             sort(row.begin(), row.end(), [](const ProgrammeCell &first_cell, const ProgrammeCell &second_cell) -> bool {
                 return to_numerical(first_cell.first.start_time) < to_numerical(second_cell.first.start_time);
             });
@@ -359,7 +357,7 @@ void print_programme(const Programme &programme, const map<CourseCode, string> &
         for (auto time_atom : time_atoms)
             ostr << setw(cell_width) << left << to_string(time_atom);
         ostr << endl;
-        ostr << setfill('_') << setw(cell_width * (time_atoms.size() - 1) + string("     ").size())
+        ostr << setfill('_') << setw(cell_width * (time_atoms.size() - 1) + string("00:00").size())
              << left << '_' << setfill(' ') << endl;
         for (ProgrammeRow row : programme.at(weekday))
             if (row.size())
