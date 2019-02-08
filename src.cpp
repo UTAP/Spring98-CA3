@@ -111,7 +111,8 @@ size_t to_numerical(TimeSlot::Time time) {
 
 string to_string(TimeSlot::Time time) {
     const int first_hour = 7;
-    string res = to_string(first_hour + to_numerical(time) / 2) + ":" + (to_numerical(time) % 2 ? "30" : "00");
+    const string hour_min_delim = ":";
+    string res = to_string(first_hour + to_numerical(time) / 2) + hour_min_delim + (to_numerical(time) % 2 ? "30" : "00");
     return res.size() < 5 ? "0" + res : res;
 }
 
@@ -217,7 +218,7 @@ TimeSlot parse_time_slot(string weekday, string full_time) {
         time_slot.end_time = time_dict.at(times[1]);
         if (to_numerical(time_slot.start_time) >= to_numerical(time_slot.end_time))
             throw invalid_argument("Invalid time slot arg");
-    } catch(out_of_range) {
+    } catch (out_of_range) {
         throw invalid_argument("Invalid time slot arg");
     }
     return time_slot;
@@ -246,7 +247,7 @@ vector<Offering> get_offerings(istream &istr) {
     while (getline(istr, offering)) {
         try {
             offerings.push_back(parse_offering(offering));
-        } catch(const invalid_argument &exc) {
+        } catch (const invalid_argument &exc) {
             cerr << exc.what() << ". Try again..." << endl;
         }
     }
@@ -305,9 +306,14 @@ Programme schedule(const vector<Offering> &offerings) {
     return programme;
 }
 
+void print_row_pref(ostream &ostr) {
+    const string time_hour_mask = "00";
+    ostr << string(time_hour_mask.size(), ' ');
+}
+
 void print_row_borders(const ProgrammeRow &row, ostream &ostr,
         size_t cell_width, const char vertical_border, const char left_corner, const char right_corner) {
-    ostr << "  ";
+    print_row_pref(ostr);
     size_t cur = 0;
     for (ProgrammeCell cell : row) {
         ostr << setw((to_numerical(cell.first.start_time) - cur) * cell_width + 1) << right << left_corner;
@@ -320,13 +326,18 @@ void print_row_borders(const ProgrammeRow &row, ostream &ostr,
 
 void print_row_contents(const ProgrammeRow &row, const map<CourseCode, string> &course_names, ostream &ostr,
         size_t cell_width, const char vertical_border) {
-    ostr << "  ";
+    print_row_pref(ostr);
     size_t cur = 0;
     for (ProgrammeCell cell : row) {
         ostr << setw((to_numerical(cell.first.start_time) - cur) * cell_width + 1) << right << vertical_border;
         size_t width = (to_numerical(cell.first.end_time) - to_numerical(cell.first.start_time));
         size_t cnt_width = width * cell_width - 2;
-        string cnt = course_names.at(cell.second.course_code) + " (" + to_string(cell.second.group_code) + ")";
+        string cnt;
+        try {
+            cnt = course_names.at(cell.second.course_code) + " (" + to_string(cell.second.group_code) + ")";
+        } catch (out_of_range) {
+            throw invalid_argument("Invalid course code");
+        }
         if (cnt.size() > cnt_width)
             throw invalid_argument("Long course name");
         size_t space_after_cnt_width = (cnt_width - cnt.size()) / 2;
@@ -351,14 +362,19 @@ void print_row(const ProgrammeRow &row, const map<CourseCode, string> &course_na
 
 void print_programme(const Programme &programme, const map<CourseCode, string> &course_names, string title, ostream &ostr) {
     const size_t cell_width = 10;
-    ostr << "# " << title << endl << endl;
+    const string title_pref = "# ";
+    const string weekday_pref = "## ";
+    const char timeline_border = '_';
+    const string time_mask = "00:00";
+
+    ostr << title_pref << title << endl << endl;
     for (auto weekday : weekdays) {
-        ostr << "## " << to_string(weekday) << endl << endl;
+        ostr << weekday_pref << to_string(weekday) << endl << endl;
         for (auto time_atom : time_atoms)
             ostr << setw(cell_width) << left << to_string(time_atom);
         ostr << endl;
-        ostr << setfill('_') << setw(cell_width * (time_atoms.size() - 1) + string("00:00").size())
-             << left << '_' << setfill(' ') << endl;
+        ostr << setfill(timeline_border) << setw(cell_width * (time_atoms.size() - 1) + string(time_mask).size())
+             << left << timeline_border << setfill(' ') << endl;
         for (ProgrammeRow row : programme.at(weekday))
             if (row.size())
                 print_row(row, course_names, ostr, cell_width);
@@ -373,8 +389,12 @@ int main(int argc, char const *argv[])
         return EXIT_FAILURE;
     }
 
-    static const map<CourseCode, string> course_names = get_course_names(argv[1]);
-    print_programme(schedule(get_offerings(cin)), course_names, argv[2], cout);
+    try {
+        print_programme(schedule(get_offerings(cin)), get_course_names(argv[1]), argv[2], cout);
+    } catch (const invalid_argument &exc) {
+        cerr << exc.what() << "." << endl;
+        return EXIT_FAILURE;
+    }
     
     return EXIT_SUCCESS;
 }
