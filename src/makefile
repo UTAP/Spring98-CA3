@@ -4,8 +4,8 @@ a.out: src.cpp
 	g++ -fsanitize=address -Wextra -Wall -pedantic -std=c++11 src.cpp
 
 .PHONY: demo
-demo: a.out input.txt
-	./a.out courses.csv "Prog" < input.txt > output.txt
+demo: a.out ../sample/input.txt
+	./a.out ../sample/courses.csv "Prog" < ../sample/input.txt > ../sample/output.txt
 
 .PHONY: clean
 clean:
