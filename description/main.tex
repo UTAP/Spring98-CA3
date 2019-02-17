@@ -8,10 +8,10 @@
 \usepackage{xepersian}
 
 \title{تمرین شمارهٔ ۳}
-\author{رامتین خسروی، \href{mailto:info@hadisafari.ir?subject=[AP\%20S98 A1]\%20}{هادی صفری}}
+\author{رامتین خسروی، \href{mailto:hadi.safari@ut.ac.ir?subject=[AP\%20S98 A3]\%20}{هادی صفری} و \href{mailto:ys.jafari@ut.ac.ir?subject=[AP\%20S98 A3]\%20}{یاسمن جعفری}}
 \course{برنامه‌سازی پیشرفته}
 \lecturer{رامتین خسروی}
-\deadline{شنبه ؟ بهمن ۱۳۹۷، ساعت ۲۳:۵۵}
+\deadline{شنبه ۱۸ اسفند ۱۳۹۷، ساعت ۲۳:۵۵}
 \graphicspath{{./img/}}
 \renewcommand{\labelitemi}{$\circ$}
 \renewcommand{\labelitemii}{$\diamond$}
@@ -147,7 +147,7 @@ _______________________________________________________
 
     در انتهای هیچ سطری نویسهٔ فضای خالی وجود نخواهد داشت.\LTRfootnote{no trailing whitespace}
 
-    به دلیل طولانی~بودن سطرهای خروجی، نمایش خروجی در صفحهٔ خط فرمان احتمالاً قابل فهم نیست. می‌توانید با استفاده از روش معرفی‌شده در ضمیمهٔ~\ref{sec:diff} خروجی برنامه را در یک فایل بریزید و سپس در یک ویرایشگر متن در حالت غیرفعال~بودن \textit{شکستن خط}\LTRfootnote{line break} یا \textit{لفافه‌بندی کلمه}\LTRfootnote{word wrap} آن را مشاهده کنید.
+    به دلیل طولانی~بودن سطرهای خروجی، نمایش خروجی در صفحهٔ خط فرمان احتمالاً قابل فهم نیست. می‌توانید با استفاده از روش معرفی‌شده در ضمائم تمرین اول خروجی برنامه را در یک فایل بریزید و سپس در یک ویرایشگر متن در حالت غیرفعال~بودن \textit{شکستن خط}\LTRfootnote{line break} یا \textit{لفافه‌بندی کلمه}\LTRfootnote{word wrap} آن را مشاهده کنید.
 
     \clearpage
 
@@ -184,93 +184,20 @@ $ ./a.out courses.csv "Prog"
 
     \clearpage
     
-    \section{نحوه‌ی تحویل}
+    \section{نحوهٔ تحویل}
 
     پروندهٔ\LTRfootnote{file} برنامهٔ خود را با نام \lr{A1-SID.cpp} در صفحهٔ \lr{CECM} درس بارگذاری کنید که \lr{SID} شمارهٔ دانشجویی شماست؛ برای مثال اگر شمارهٔ دانشجویی شما ۸۱۰۱۹۷۹۹۹ باشد، نام پروندهٔ شما باید \lr{A1-810197999.cpp} باشد.
 
     \begin{itemize}
-        \item برنامه‌ی شما باید در سیستم‌عامل لینوکس و با مترجم \lr{g++} با استاندارد \lr{\texttt{c++11}} ترجمه و در زمان معقول برای ورودی‌های آزمون اجرا شود.
-        \item از صحت قالب\LTRfootnote{format} ورودی‌ها و خروجی‌های برنامه‌ی خود مطمئن شوید. توجه کنید که آزمون خودکار برنامه به تعداد و محل فاصله‌ها و خطوط خالی نیز حساس است. توصیه می‌کنیم حتماً برنامهٔ خود را با ورودی و خروجی نمونه بیازمایید و از ابزارهایی مانند \lr{diff} برای اطمینان از درستی عملکرد برنامهٔ خود برای ورودی نمونه استفاده کنید.
+        \item برنامهٔ شما باید در سیستم‌عامل لینوکس و با مترجم \lr{g++} با استاندارد \lr{\texttt{c++11}} ترجمه و در زمان معقول برای ورودی‌های آزمون اجرا شود.
+        \item در این تمرین اجازهٔ استفاده از مفاهیم شیءگرایی را \textbf{ندارید}.
+        \item از صحت قالب\LTRfootnote{format} ورودی‌ها و خروجی‌های برنامهٔ خود مطمئن شوید. توجه کنید که آزمون خودکار برنامه به تعداد و محل فاصله‌ها و خطوط خالی نیز حساس است. توصیه می‌کنیم حتماً برنامهٔ خود را با ورودی و خروجی نمونه بیازمایید و از ابزارهایی مانند \lr{diff} برای اطمینان از درستی عملکرد برنامهٔ خود برای ورودی نمونه استفاده کنید.
         \item هدف این تمرین یادگیری شماست. لطفاً تمرین را خودتان انجام دهید. در صورت کشف تقلب مطابق قوانین درس با آن برخورد خواهد شد.
     \end{itemize}
 
     \appendix
 
-    \section{مقایسهٔ خروجی برنامه با خروجی مورد انتظار\label{sec:diff}}
-
-    مقایسهٔ خروجی برنامه با خروجی مورد انتظار با چشم شاید برای برنامه‌های کوچک که خروجی کمی تولید می‌کنند و روند اجرای کوتاهی دارند میسر باشد، برای برنامه‌های بزرگ‌تر با مسیر اجرای پیچیده کاری دشوار است. برای این کار می‌توان از ابزارهایی که در سیستم‌عامل لینوکس در دسترس است استفاده کرد.
-
-    در حالت عادی، برای ترجمه و اجرای یک برنامه از این دستورها استفاده می‌شود:
-    \begin{latin}%
-    \begin{Verbatim}[fontsize=\small]
-g++ helloworld.cpp -std=c++11
-./a.out
-    \end{Verbatim}
-    \end{latin}
-
-    در این حالت برنامه ورودی‌اش را از ورودی استاندارد \lr{stdin} (خط فرمان) می‌خواند و خروجی را نیز در خروجی استاندارد \lr{stdout} (صفحهٔ خط فرمان) می‌نویسد.
-
-    برای اجرای راحت‌تر برنامه، می‌توان ورودی را در پرونده مانند \lr{in.txt} نوشت و سپس محتوای آن را به ورودی استاندارد تغییر مسیر\LTRfootnote{redirect} داد تا هنگام اجرای مکرر برنامه نیازی به نوشتن مکرر ورودی‌های مختلف در خط فرمان نباشد:
-    \begin{latin}%
-    \begin{Verbatim}[fontsize=\small]
-./a.out < in.txt
-    \end{Verbatim}
-    \end{latin}
-
-    همچنین، می‌توان خروجی برنامه را به پرونده‌ای مانند \lr{out.txt} تغییر مسیر داد تا بتوان بعداً هم به آن دسترسی داشت:
-    \begin{latin}%
-    \begin{Verbatim}[fontsize=\small]
-./a.out > out.txt
-    \end{Verbatim}
-    \end{latin}
-
-    ترکیب این دو عمل نیز امکان‌پذیر است:
-    \begin{latin}%
-    \begin{Verbatim}[fontsize=\small]
-./a.out < in.txt > out.txt
-    \end{Verbatim}
-    \end{latin}
-
-    فرض کنیم خروجی مورد انتظار برای ورودی \lr{in.txt} در پرونده‌ای به نام \lr{sol.txt} قرار دارد. می‌توان با استفاده از دستور \lr{\lstinline[language=bash]{diff}} خروجی حاصل از اجرای برنامه را با خروجی مورد انتظار مقایسه کرد.
-
-    برای این کار، ابتدا ورودی را از \lr{in.txt} به برنامه می‌دهیم و خروجی برنامه را در پرونده‌ای مانند \lr{out.txt} ذخیره می‌کنیم. سپس با دستور \lr{\lstinline[language=bash]{diff}} پروندهٔ \lr{out.txt} را با \lr{sol.txt} مقایسه می‌کنیم.
-    \begin{latin}%
-    \begin{Verbatim}[fontsize=\small]
-g++ helloworld.cpp -std=c++11
-./a.out < in.txt > out.txt
-diff out.txt sol.txt
-    \end{Verbatim}
-    \end{latin}
-
-    اگر پرونده‌ها یکسان باشند، دستور \lr{\lstinline[language=bash]{diff}} هیچ خروجی‌ای تولید نمی‌کند. در غیر این صورت، تفاوت‌های دو پرونده را نشان می‌دهد.
-
-    هر بخش از خروجی این دستور با شمارهٔ خطوط آغاز می‌شود: شمارهٔ خطوط در پروندهٔ قدیمی (سمت چپ)، یکی از حروف \lr{\texttt{d}}، \lr{\texttt{a}} یا \lr{\texttt{c}} و شمارهٔ خطوط در پروندهٔ جدید (سمت راست). حرف میان شمارهٔ خطوط نوع تغییرات را نشان می‌دهد:
-    \begin{description}[leftmargin=3em,style=nextline,font=\labelitemi\quad\bfseries]
-        \item[\lr{\texttt{d}}] حذف~شدن\\
-        محتوای محذوف بعد از \lr{\lstinline[language=diff]{<}} نمایش داده می‌شود.
-        \item[\lr{\texttt{a}}] افزوده~شدن\\
-        محتوای جدید بعد از \lr{\lstinline[language=diff]{>}} نمایش داده می‌شود.
-        \item[\lr{\texttt{c}}] تغییر\\
-        محتوای قدیمی بعد از \lr{\lstinline[language=diff]{<}} نمایش داده می‌شود.
-        سپس \lr{\lstinline[language=diff]{---}} می‌آید.
-        بعد از آن، محتوای جدید بعد از \lr{\lstinline[language=diff]{>}} نمایش داده می‌شود.
-    \end{description}
-
-    به این مثال توجه کنید \cite{wiki-diff}:
-    \begin{latin}%
-    \centering
-    \begin{minipage}[t]{0.28\textwidth}
-    \VerbatimInput[numbers=left,xleftmargin=10mm,fontsize=\scriptsize,frame=lines,label={\rl{قدیمی}}]{diff-old.txt}
-    \end{minipage}%
-    \begin{minipage}[t]{0.28\textwidth}
-    \VerbatimInput[numbers=left,xleftmargin=10mm,fontsize=\scriptsize,frame=lines,label={\rl{جدید}}]{diff-new.txt}
-    \end{minipage}%
-    \begin{minipage}[t]{0.28\textwidth}
-    \lstinputlisting[xleftmargin=10mm,frame=none,language=diff,basicstyle=\scriptsize\ttfamily\color{Cyan},label={diff}]{diff-res.txt}
-    \end{minipage}
-    \end{latin}    
-
-    \section[آرگومان‌های خط فرمان]{آرگومان‌های خط فرمان\label{sec:commandline-args}\LTRfootnote{command line arguments}{\hfill\normalfont\footnotesize در نگارش این بخش از منبع~\cite{learncpp-commandlineargs} کمک گرفته شده است.}}
+    \section[آرگومان‌های خط فرمان]{آرگومان‌های خط فرمان\label{sec:commandline-args}\LTRfootnote{command line arguments}}
 
     \textit{آرگومان‌های خط فرمان} آرگومان‌هایی هستند که سیستم‌عامل در زمان برنامه آن‌ها را به برنامه انتقال می‌دهد. سپس، برنامه می‌تواند آن‌ها را نادیده بگیرد یا از آن‌ها استفاده کند.
 
@@ -314,12 +241,6 @@ There are 3 arguments:
     \end{Verbatim}
     \end{latin}
 
-    برای اطلاع از جزئیات بیشتر نحوهٔ کار با آرگومان‌های خط فرمان به منبع~\cite{learncpp-commandlineargs} مراجعه کنید.
-
-    \begin{thebibliography}{9}
-    \latin
-    \bibitem{learncpp-commandlineargs} Alex. 2008. ``Command Line Arguments'' In \textit{LearnCpp.com}. Retrieved from \url{https://www.learncpp.com/cpp-tutorial/713-command-line-arguments/}.
-    \bibitem{wiki-diff} Wikipedia contributors. 2019. ``Diff'' In \textit{Wikipedia, The Free Encyclopedia}. Retrieved from \url{https://en.wikipedia.org/wiki/Diff}.
-    \end{thebibliography}
+    برای اطلاع از جزئیات بیشتر نحوهٔ کار با آرگومان‌های خط فرمان به بخش \href{https://www.learncpp.com/cpp-tutorial/713-command-line-arguments/}{\lr{Command Line Arguments}} در پایگاه \url{LearnCpp.com} مراجعه کنید.
 
 \end{document}
