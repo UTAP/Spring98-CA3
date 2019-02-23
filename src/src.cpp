@@ -185,7 +185,7 @@ map<CourseCode, string> get_course_names(string dict_addr) {
     }
     {
         string dummy_str;
-        dict_stream >> dummy_str >> dummy_str;
+        dict_stream >> dummy_str;
     }
     while (!dict_stream.eof() && !dict_stream.fail()) {
         CourseCode code;
