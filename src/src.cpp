@@ -145,6 +145,8 @@ map<string, TimeSlot::Time> get_time_dict() {
         time_dict["18:30"] = TimeSlot::Time::T182;
         time_dict["19:00"] = TimeSlot::Time::T191;
         time_dict["19:30"] = TimeSlot::Time::T192;
+        time_dict["20:00"] = TimeSlot::Time::T201;
+        time_dict["20:30"] = TimeSlot::Time::T202;
     }
     return time_dict;
 }
